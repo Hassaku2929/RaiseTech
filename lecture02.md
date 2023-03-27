@@ -7,13 +7,14 @@
 ### ブランチ:lecture02」を作成して、今日の講座での学びを「 lecture02.md 」に Markdown で 書き、さらに push までやってみましょう。パブリックリポジトリは他の人も見えるリポジトリなので、センシティブな内容は書かなくて結構です。
 ### GitHub でプルリクエストを発行できたら、Slack で報告してください。
 
-# gitコマンド集
-## git init
-## git remote add origin https://github.com/xxxxxxxx/xxxxxxx.git
-## git remote -v
-## git branch -M main
-## git push -u origin main
-## git config --global init.defaultBranch main
-## git branch -M main
-## git checkout main
-##
+# git手順
+git config --global init.defaultBranch main
+①Clone コマンドの実施
+②git branch　で現在のブランチを確認
+③git branch work でブランチを作成
+④git checkout work でブランチ切替
+⑤git branch　で現在のブランチを確認（workになっていることを確認）
+⑥対象ファイルの編集
+⑦git commit -m"課題提出"
+⑧git push origin work
+⑨GitHubでプルリクエスを実施
