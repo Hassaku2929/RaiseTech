@@ -14,3 +14,4 @@
 ## git branch -M main
 ## git push -u origin main
 ## git config --global init.defaultBranch main
+## git branch -M main
