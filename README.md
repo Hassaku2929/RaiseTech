@@ -1,5 +1,5 @@
 # GitHubの使い方
-1. マスターをローカールに複製  `$ git clone https://github.com/xxxxxxx/xxxxxxx.git`
+1. マスターをローカールに複製. `$ git clone https://github.com/xxxxxxx/xxxxxxx.git`
  
 2. ブランチを確認
 　`$ git branch`
