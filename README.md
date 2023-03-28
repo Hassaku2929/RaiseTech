@@ -1,7 +1,7 @@
 # GitHubの使い方
 1. マスターをローカールに複製  
 `$ git clone https://github.com/xxxxxxx/xxxxxxx.git`
-> 更新
+　> 更新. 
 　`$ git pull origin main `
  
 2. ブランチを確認  
