@@ -10,21 +10,21 @@ Rails の構成管理ツールの名前は何でしたか?確認してみて�
 (任意)今回の報告を GitHub の PR で行って、URL を報告してください。
 
 1. アプリケーション起動  
-![アプリケーション起動](https://github.com/Hassaku2929/RaiseTech/lesson3/img/image_1.png)
+![アプリケーション起動](img/image_1.png)
 
 2. APサーバーの名前とバージョンを確認  
-![APサーバーの名前とバージョンを確認](https://github.com/Hassaku2929/RaiseTech/lesson3/img/image_2.png)
+![APサーバーの名前とバージョンを確認](img/image_2.png)
 
 3. APサーバー停止後の動作  
 　→サーバ停止後はブラウザ上には表示されない  
-![APサーバー停止後の動作](https://github.com/Hassaku2929/RaiseTech/lesson3/img/image_3.png)
+![APサーバー停止後の動作](img/image_3.png)
 
 4. DBサーバ名、バージョンの確認  
-![DBサーバ名、バージョンの確認](https://github.com/Hassaku2929/RaiseTech/lesson3/img/image_4.png)
+![DBサーバ名、バージョンの確認](img/image_4.png)
 
 5. DBサーバ停止後の動作確認
 　→DBサーバ停止後にアプリケーション起動を実施してもエラーが発生し、起動できない  
-![DBサーバ停止後の動作確認](https://github.com/Hassaku2929/RaiseTech/lesson3/img/image_5.png)
+![DBサーバ停止後の動作確認](img/image_5.png)
 
 # 学んだ内容
 フレームワークはとても便利でアプリケーションを制作する上では素晴らしいツールだと思います。  
