@@ -24,3 +24,6 @@ DNS nameでWebサイトにアクセス
 　　→[S3構築](Construction/S3.md)  
 ![image_6](img/image_6.png)  
 ![image_7](img/image_7.png)  
+
+5. 構成図  
+![RaiseTech構成図](img/RaiseTech構成図.png)  
