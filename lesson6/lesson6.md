@@ -3,14 +3,14 @@
 1. CloudTrailのイベント確認  
 ![image_1](img/image_1.png)  
 
-イベントに含まれていた情報
-• イベント名："DeleteTrail"
-• IPアドレス
-• リージョン
-• 発生時刻
-• ユーザー名
-• アクセスキー
-• 電話番号
+イベントに含まれていた情報  
+• イベント名："DeleteTrail"  
+• IPアドレス  
+• リージョン  
+• 発生時刻  
+• ユーザー名  
+• アクセスキー  
+• 電話番号  
 
 
 2. CroudWatchでALBのアラーム通知  
@@ -31,5 +31,5 @@
 4.1 現在の利用料  
 ![image_6](img/image_6.png)  
 
-4.1 AWS利用無料枠  
+4.2 AWS利用無料枠  
 ![image_7](img/image_7.png)  
