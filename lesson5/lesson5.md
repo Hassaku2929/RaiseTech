@@ -1,4 +1,4 @@
-# Lesson4
+# Lesson5
 ## EC2環境構築  
 
 1. rails server -b 0.0.0.0　コマンド  
