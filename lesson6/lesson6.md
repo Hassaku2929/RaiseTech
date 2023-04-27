@@ -10,7 +10,7 @@
 • 発生時刻  
 • ユーザー名  
 • アクセスキー  
-• 電話番号  
+• アカウントID
 
 
 2. CroudWatchでALBのアラーム通知  
@@ -21,7 +21,10 @@
 ![image_3](img/image_3.png)  
 ![image_4](img/image_4.png)  
 
-2.3 メール通知  
+2.3 メール通知(OKアラーム)  
+![image_8](img/image_8.png)  
+
+2.4 メール通知(異常アラーム)  
 ![image_5](img/image_5.png)  
 
 3. AWS利用料の見積作成  
