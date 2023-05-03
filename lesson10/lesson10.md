@@ -26,7 +26,7 @@
 ![image_5](img/image_5.png)  
 
 ### その他
-作成したソースコード格納先
-[Network](/RaiseTech/source/Network-properties.yml)  
-[Security](/RaiseTech/source/Security-properties.yml)  
-[Application](/RaiseTech/source/App-properties.yml)  
+作成したソースコード格納先  
+[Network](../source/Network-properties.yml)  
+[Security](../source/Security-properties.yml)  
+[Application](../source/App-properties.yml)  
