@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: "RaiseTech lesson10 Security"
+
+Resources:
+#=================================
+# Security Group
+# VpcId                      |必須        |VPCID
+# SecurityGroupIngress       |オプション   |インバウンドルールを宣言
+# IpProtocol                 |オプション   |IP プロトコル
+# FromPort                   |オプション   |ポート範囲の開始番号
+# ToPort                     |オプション   |ポート範囲の終了番号
+# CidrIp                     |オプション   |IPv4 範囲
+# SourceSecurityGroupId      |オプション   |セキュリティグループID
+#=================================
+  sshSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: sshSecurityGroup
+      VpcId: !ImportValue aws-network-basis:myVPC
+      Tags:
+        - Value: Name
+          Key: sshSecurityGroup
+  
+  sshSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      GroupId: !Ref sshSecurityGroup
+      SourceSecurityGroupId: !Ref sshSecurityGroup
+
+  rdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: rdsSecurityGroup
+      VpcId: !ImportValue aws-network-basis:myVPC
+      SecurityGroupIngress:
+        # MYSQL/Aurora
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Value: Name
+          Key: rdsSecurityGroup
+
+  ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ec2SecurityGroup
+      VpcId: !ImportValue aws-network-basis:myVPC
+      SecurityGroupIngress:
+        # HTTPS
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        # HTTP
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        # カスタムTCP
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        # カスタムTCP
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Value: Name
+          Key: ec2SecurityGroup
+
+  albSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: albSecurityGroup
+      VpcId: !ImportValue aws-network-basis:myVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Value: Name
+          Key: albSecurityGroup
+
+Outputs:
+  sshSecurityGroup:
+    Value: !Ref sshSecurityGroup
+    Export:
+      Name: aws-security-basis:sshSecurityGroup
+
+  ec2SecurityGroup:
+    Value: !Ref ec2SecurityGroup
+    Export:
+      Name: aws-security-basis:ec2SecurityGroup
+
+  rdsSecurityGroup:
+    Value: !Ref rdsSecurityGroup
+    Export:
+      Name: aws-security-basis:rdsSecurityGroup
+      
+  albSecurityGroup:
+    Value: !Ref albSecurityGroup
+    Export:
+      Name: aws-security-basis:albSecurityGroup

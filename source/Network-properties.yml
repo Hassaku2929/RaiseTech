@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: "RaiseTech lesson10 Network"
+
+Resources:
+#=================================
+# VPC
+# CidrBlock          |必須        |VPCのプライマリIPv4CIDRブロック
+# EnableDnsHostnames |オプション   |DNSホスト名取得の有効/無効
+# EnableDnsSupport   |オプション   |VPCに対してDNS解決がサポートされているかどうか
+# InstanceTenancy    |オプション   |VPC内に起動されるインスタンスの許可されているテナンシー
+#=================================
+  myVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: My-VPC
+
+#=================================
+# Gateway
+# AWS::EC2::InternetGateway
+# VpcId                          |必須        |VPCID
+# 
+#AWS::EC2::VPCGatewayAttachment
+# InternetGatewayId              |オプション   |インターネットゲートウェイID
+# VpnGatewayId                   |オプション   |仮想プライベートゲートウェイID
+#=================================
+  myIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: My-VPC
+  
+  myAGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref myIGW
+      VpcId: !Ref myVPC
+
+#=================================
+# Subnet
+# VpcId                        |必須        |VPCID
+# CidrBlock                    |必須        |IPv4CIDRブロック
+# AvailabilityZone             |オプション   |サブネットのアベイラビリティーゾーン
+# MapPublicIpOnLaunch          |オプション   |このサブネットで起動されたインスタンスがパブリック IPv4 アドレスを受け取るかどうか
+# Ipv6CidrBlock                |オプション   |IPv6 CIDR ブロック
+# AssignIpv6AddressOnCreation  |オプション   |IPv6を利用するかどうか
+#=================================
+  mySubnet01a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub ${AWS::Region}a
+      VpcId: !Ref myVPC
+      CidrBlock: 192.168.0.0/28
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: subnet01a
+
+  mySubnet02a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub ${AWS::Region}a
+      VpcId: !Ref myVPC
+      CidrBlock: 192.168.0.128/28
+      Tags:
+        - Value: Name
+          Key: subnet02a
+
+  mySubnet01c:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub ${AWS::Region}c
+      VpcId: !Ref myVPC
+      CidrBlock: 192.168.0.16/28
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: subnet01c
+  
+  mySubnet02c:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub ${AWS::Region}c
+      VpcId: !Ref myVPC
+      CidrBlock: 192.168.0.144/28
+      Tags:
+        - Key: Name
+          Value: subnet02c
+
+#=================================
+# RouteTable
+# AWS::EC2::RouteTable
+# VpcId                                   |必須        |VPCID
+#
+# AWS::EC2::SubnetRouteTableAssociation
+# RouteTableId                            |必須        |ルートテーブル ID
+# SubnetId                                |必須        |サブネット ID
+#
+# AWS::EC2::Route
+# DestinationCidrBlock                    |オプション   |ルーティング先の照合に使用する IPv4 CIDR ブロック
+# DestinationIpv6CidrBlock                |オプション   |ルーティング先の照合に使用する IPv6 CIDR ブロック
+# EgressOnlyInternetGatewayId             |オプション   |Egress Only インターネットゲートウェイ ID
+# GatewayId                               |オプション   |ゲートウェイ ID
+# InstanceId                              |オプション   |NAT インスタンス ID
+# NatGatewayId                            |オプション   |NAT ゲートウェイ ID
+# NetworkInterfaceId                      |オプション   |ネットワークインターフェイス ID
+# RouteTableId                            |必須        |ルートテーブル ID
+# TransitGatewayId                        |オプション   |トランジットゲートウェイ ID
+# VpcPeeringConnectionId                  |オプション   |VPC ピア接続 ID
+#=================================
+  myRouteTable01:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref myVPC
+      Tags:
+        - Key: Name
+          Value: routetable01
+
+  myRouteTableAssociation01a:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref myRouteTable01
+      SubnetId: !Ref mySubnet01a
+
+  myRouteTableAssociation01c:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref myRouteTable01
+      SubnetId: !Ref mySubnet01c
+  
+  myRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref myIGW
+      RouteTableId: !Ref myRouteTable01
+  
+  myRouteTable02:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref myVPC
+      Tags:
+        - Key: Name
+          Value: routetable02
+
+  myRouteTableAssociation02a:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref myRouteTable02
+      SubnetId: !Ref mySubnet02a
+
+  myRouteTableAssociation02c:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref myRouteTable02
+      SubnetId: !Ref mySubnet02c
+  
+Outputs:
+  myVPC:
+    Value: !Ref myVPC
+    Export:
+      Name: aws-network-basis:myVPC
+
+  mySubnet01a:
+    Value: !Ref mySubnet01a
+    Export:
+      Name: aws-network-basis:mySubnet01a
+
+  mySubnet01c:
+    Value: !Ref mySubnet01c
+    Export:
+      Name: aws-network-basis:mySubnet01c
