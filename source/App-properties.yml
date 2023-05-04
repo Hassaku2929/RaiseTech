@@ -1,0 +1,179 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: "RaiseTech lesson10"
+
+Resources:
+
+#=================================
+#RDS
+# AllocatedStorage                    |DBに最初に割り当てられるストレージ量
+# AssociatedRoles                     |関連づけるIAMロール
+# BackupRetentionPeriod               |自動バックアップを保持する日数
+# CharacterSetName                    |文字セット名
+# CopyTagsToSnapshot                  |スナップショットを復元時、タグをコピーするかどうか
+# DBName                              |データベース名
+# DBSnapshotIdentifier                |スナップショット名
+# DBSubnetGroupName                   |関連付けるDB サブネットグループ
+# DeleteAutomatedBackups              |DBインスタンスが削除された直後に自動バックアップを削除するかどうか
+# DeletionProtection                  |削除保護の有無
+# DomainIAMRoleName                   |APIを呼ぶときに使用するIAMロール名
+# EnableCloudwatchLogsExports         |ログ出力の有無
+# EnableIAMDatabaseAuthentication     |IAM DB認証の有無
+# EngineVersion                       |エンジンのバージョン
+# KmsKeyId                            |使用するKMSキー
+# MasterUsername                      |マスターユーザー名
+# MasterUserPassword                  |マスターユーザーのパスワード
+# MaxAllocatedStorage                 |DBのストレージを自動的にスケーリングできる上限
+# MultiAZ                             |マルチAZにするかどうか
+# Port                                |受け入れるポート
+# PreferredBackupWindow               |バックアップの時間帯
+# ProcessorFeatures                   |CPUコア数とコアあたりのスレッド数
+# StorageEncrypted                    |暗号化するかどうか
+# StorageType                         |ストレージタイプ
+# VPCSecurityGroups                   |割り当てるセキュリティグループ
+#=================================
+
+#サブネットグループ作成
+  rdsSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: rdsSubnetGroup
+      DBSubnetGroupName: rdsSubnetGroup
+      SubnetIds:
+      - !ImportValue aws-network-basis:mySubnet01a
+      - !ImportValue aws-network-basis:mySubnet01c
+      Tags:
+      - Key: Name
+        Value: rdsSubnetGroup
+
+#RDS作成
+  rdsDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: my-rdsdb
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      EngineVersion: 8.0.32
+      MasterUsername: xxxxxx
+      MasterUserPassword: xxxxxxxxx
+      DBName: mydatabase
+      BackupRetentionPeriod: 0
+      MultiAZ: false
+      PubliclyAccessible: false
+      StorageType: gp2
+      AllocatedStorage: "20"
+      StorageEncrypted: true
+      CopyTagsToSnapshot: false
+      DeleteAutomatedBackups: true
+      DBSubnetGroupName: !Ref rdsSubnetGroup
+      VPCSecurityGroups:
+      - !ImportValue aws-security-basis:rdsSecurityGroup
+      Tags:
+      - Key: Name
+        Value: rdsDB
+
+#=================================
+# EC2
+# ImageId                      |VPCID
+# InstanceType                 |インバウンドルールを宣言
+# SubnetId                     |IP プロトコル
+# SecurityGroupIds             |ポート範囲の開始番号
+#=================================
+  ec2aInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: "xxxxxxxxxx"
+      ImageId: ami-052c9af0c988f8bbd
+      InstanceType: t2.micro
+      SubnetId: !ImportValue aws-network-basis:mySubnet01a
+      SecurityGroupIds:
+        - !ImportValue aws-security-basis:ec2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: myEC2
+
+#=================================
+# S3
+# BucketName                       |S3のバケット名
+# PublicAccessBlockConfiguration   |アクセスの許可
+# AccessControl                    |所有者に FULL_CONTROL の権限を付与する
+# BucketEncryption                 |暗号化についての設定
+#=================================
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bucket-name-original-1234
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+#=================================
+# ALB
+#=================================
+  albResource:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: my-ALB
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+      - !ImportValue aws-network-basis:mySubnet01a
+      - !ImportValue aws-network-basis:mySubnet01c
+      SecurityGroups:
+      - !ImportValue aws-security-basis:albSecurityGroup
+      IpAddressType: ipv4
+      Tags:
+      - Key: Name
+        Value: my-ALB
+
+#ターゲットグループ作成
+  tgResource:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: "my-TGN"
+      VpcId: !ImportValue aws-network-basis:myVPC
+      Protocol: "HTTP"
+      ProtocolVersion: "HTTP1"
+      Port: 80
+      TargetType: "instance"
+      Targets:
+      - Id: !Ref ec2aInstance
+        Port: 80
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: "/"
+      HealthCheckPort: "traffic-port"
+      HealthCheckProtocol: "HTTP"
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 5
+      UnhealthyThresholdCount: 2
+      Matcher:
+        HttpCode: "200"
+      Tags:
+      - Key: Name
+        Value: my-TGN
+
+#リスナー設定
+  ListenerResource:
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Properties:
+      LoadBalancerArn: !Ref albResource
+      Port: 80
+      Protocol: "HTTP"
+      DefaultActions:
+      - TargetGroupArn: !Ref tgResource
+        Type: "forward"
+
+#Outputsセクション設定 
+Outputs:
+  ALBOutput1:
+    Value: !GetAtt albResource.DNSName
+    Export:
+      Name: ut-alb-dnsname
+  ALBOutput2:
+    Value: !GetAtt albResource.CanonicalHostedZoneID
+    Export:
+      Name: ut-alb-hostzoneid
