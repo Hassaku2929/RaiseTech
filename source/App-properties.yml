@@ -43,8 +43,7 @@ Resources:
       - !ImportValue aws-network-basis:mySubnet01a
       - !ImportValue aws-network-basis:mySubnet01c
       Tags:
-      -
-        Key: Name
+      - Key: Name
         Value: rdsSubnetGroup
 
 #RDS作成
@@ -72,6 +71,7 @@ Resources:
       Tags:
       - Key: Name
         Value: rdsDB
+
 #=================================
 # EC2
 # ImageId                      |VPCID
@@ -91,6 +91,7 @@ Resources:
       Tags:
         - Key: Name
           Value: myEC2
+
 #=================================
 # S3
 # BucketName                       |S3のバケット名
@@ -166,7 +167,7 @@ Resources:
       - TargetGroupArn: !Ref tgResource
         Type: "forward"
 
-#Outputsセクション設定  
+#Outputsセクション設定 
 Outputs:
   ALBOutput1:
     Value: !GetAtt albResource.DNSName
