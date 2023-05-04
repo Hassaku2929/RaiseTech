@@ -47,7 +47,7 @@ Resources:
         Key: Name
         Value: rdsSubnetGroup
 
-#RDS作成  
+#RDS作成
   rdsDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -55,8 +55,8 @@ Resources:
       DBInstanceClass: db.t3.micro
       Engine: mysql
       EngineVersion: 8.0.32
-      MasterUsername: xxxxx
-      MasterUserPassword: xxxxxxx
+      MasterUsername: xxxxxx
+      MasterUserPassword: xxxxxxxxx
       DBName: mydatabase
       BackupRetentionPeriod: 0
       MultiAZ: false
@@ -67,11 +67,10 @@ Resources:
       CopyTagsToSnapshot: false
       DeleteAutomatedBackups: true
       DBSubnetGroupName: !Ref rdsSubnetGroup
-      VPCSecurityGroups: 
+      VPCSecurityGroups:
       - !ImportValue aws-security-basis:rdsSecurityGroup
-      Tags: 
-      - 
-        Key: Name
+      Tags:
+      - Key: Name
         Value: rdsDB
 #=================================
 # EC2
@@ -83,11 +82,11 @@ Resources:
   ec2aInstance:
     Type: AWS::EC2::Instance
     Properties:
-      KeyName: xxxxxx
+      KeyName: "xxxxxxxxxx"
       ImageId: ami-052c9af0c988f8bbd
       InstanceType: t2.micro
       SubnetId: !ImportValue aws-network-basis:mySubnet01a
-      SecurityGroupIds: 
+      SecurityGroupIds:
         - !ImportValue aws-security-basis:ec2SecurityGroup
       Tags:
         - Key: Name
@@ -119,15 +118,14 @@ Resources:
       Name: my-ALB
       Scheme: internet-facing
       Type: application
-      Subnets: 
+      Subnets:
       - !ImportValue aws-network-basis:mySubnet01a
       - !ImportValue aws-network-basis:mySubnet01c
-      SecurityGroups: 
+      SecurityGroups:
       - !ImportValue aws-security-basis:albSecurityGroup
       IpAddressType: ipv4
       Tags:
-      -
-        Key: Name
+      - Key: Name
         Value: my-ALB
 
 #ターゲットグループ作成
@@ -140,9 +138,8 @@ Resources:
       ProtocolVersion: "HTTP1"
       Port: 80
       TargetType: "instance"
-      Targets: 
-      - 
-        Id: !Ref ec2aInstance
+      Targets:
+      - Id: !Ref ec2aInstance
         Port: 80
       HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 30
@@ -152,11 +149,10 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 5
       UnhealthyThresholdCount: 2
-      Matcher: 
+      Matcher:
         HttpCode: "200"
       Tags:
-      -
-        Key: Name
+      - Key: Name
         Value: my-TGN
 
 #リスナー設定
@@ -166,9 +162,8 @@ Resources:
       LoadBalancerArn: !Ref albResource
       Port: 80
       Protocol: "HTTP"
-      DefaultActions: 
-      - 
-        TargetGroupArn: !Ref tgResource
+      DefaultActions:
+      - TargetGroupArn: !Ref tgResource
         Type: "forward"
 
 #Outputsセクション設定  
